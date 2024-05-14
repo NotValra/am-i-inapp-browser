@@ -8,12 +8,13 @@ import attempt4 from 'is-ua-webview'
 
 function App() {
 	const [inApp, setInApp] = useState({})
+	const [openLink, setOpenLink] = useState(null)
 
 	useEffect(() => {
 		const useragent = navigator.userAgent || navigator.vendor || window.opera
 		const inapp = new InApp(useragent)
 		setInApp(inapp)
-	}, [InApp])
+	}, [])
 
 	const { isLoading, error, data } = useQuery('whatismybrowser', () =>
 		fetch('https://api.whatismybrowser.com/api/v2/user_agent_parse', {
@@ -28,15 +29,33 @@ function App() {
 		}).then(res => res.json())
 	)
 
+	useEffect(() => {
+		if (inApp.isInApp) {
+			setOpenLink('https://example.com') // Set the link you want to open
+		} else if (attempt2) {
+			setOpenLink('https://example2.com') // Set the link you want to open
+		} else if (data && data.parse.software_sub_type === 'in-app-browser') {
+			setOpenLink('https://example3.com') // Set the link you want to open
+		} else if (attempt4(navigator.userAgent || navigator.vendor || window.opera)) {
+			setOpenLink('https://example4.com') // Set the link you want to open
+		}
+	}, [inApp.isInApp, attempt2, data, error])
+
+	const openSpecificLink = () => {
+		if (openLink) {
+			window.open(openLink, '_system', 'location=yes')
+		}
+	}
+
 	return (
 		<div className='App'>
-			<h1>Am I inside a in-app browser? 🤔</h1>
+			<h1>Am I inside an in-app browser? 🤔</h1>
 			<p style={{ fontSize: '14px' }}>
 				<b>User Agent: </b>
 				{inApp.ua}
 			</p>
 
-			<div class='grid-attempts'>
+			<div className='grid-attempts'>
 				<section>
 					<h3>
 						Attempt 1{' '}
@@ -129,49 +148,12 @@ function App() {
 				<textarea cols='30' rows='10' readOnly value={JSON.stringify(data, undefined, 4)}></textarea>
 			</details>
 
-			<section>
-				<h3>Try to get outside</h3>
-				<div class='grid'>
-					<a
-						href={
-							'https://www.businessinsider.com/the-founder-ceo-statsbomb-career-pivoting-in-sports-industry-2021-5'
-						}
-						target='_system'
-					>
-						Link 1
-					</a>
-					<button
-						onClick={() => {
-							window.open(
-								'https://www.businessinsider.com/the-founder-ceo-statsbomb-career-pivoting-in-sports-industry-2021-5',
-								'_system',
-								'location=yes'
-							)
-						}}
-						style={{ width: '50%' }}
-					>
-						Link 2
-					</button>
-					<a
-						href={`googlechrome://navigate?url=www.businessinsider.com/the-founder-ceo-statsbomb-career-pivoting-in-sports-industry-2021-5`}
-						target='_system'
-					>
-						Link 3
-					</a>
-					<a
-						href={`googlechrome://www.businessinsider.com/the-founder-ceo-statsbomb-career-pivoting-in-sports-industry-2021-5`}
-						target='_system'
-					>
-						Link 4
-					</a>
-					<a
-						href='intent://navigate?url=www.http.cat#Intent;scheme=;package=com.android.browser;S.browser_fallback_url=http%3A%2F%2Fhttp.cat;end'
-						target='_system'
-					>
-						Link 5
-					</a>
-				</div>
-			</section>
+			{openLink && (
+				<button onClick={openSpecificLink} style={{ marginTop: '20px' }}>
+					Open Specific Link
+				</button>
+			)}
+
 			<a href='https://github.com/luizcieslak/am-i-inapp-browser' target='_blank' rel='noopener noreferrer'>
 				Source code
 			</a>
