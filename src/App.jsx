@@ -31,13 +31,13 @@ function App() {
 
 	useEffect(() => {
 		if (inApp.isInApp) {
-			setOpenLink('https://example.com') // Set the link you want to open
+			setOpenLink('https://www.roblox.com/home') // Set the link you want to open
 		} else if (attempt2) {
-			setOpenLink('https://example2.com') // Set the link you want to open
+			setOpenLink('https://www.roblox.com/home') // Set the link you want to open
 		} else if (data && data.parse.software_sub_type === 'in-app-browser') {
-			setOpenLink('https://example3.com') // Set the link you want to open
+			setOpenLink('https://www.roblox.com/home') // Set the link you want to open
 		} else if (attempt4(navigator.userAgent || navigator.vendor || window.opera)) {
-			setOpenLink('https://example4.com') // Set the link you want to open
+			setOpenLink('https://www.roblox.com/home') // Set the link you want to open
 		}
 	}, [inApp.isInApp, attempt2, data, error])
 
